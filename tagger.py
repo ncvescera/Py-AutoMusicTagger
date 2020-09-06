@@ -1,8 +1,10 @@
+#!/usr/bin/python3
 import sys
 from mutagen.id3 import ID3, TIT2, TALB, TPE1, TPE2, TRCK
 from os import listdir
 from os.path import isfile, join
 import youtube_dl as ydl
+import wget
 
 
 SEP     = '-'
@@ -42,8 +44,19 @@ def download(url: str):  # downlonad songs from url with predefine format
         'outtmpl': path + '%(track_number)s' + SEP + '%(album)s' + SEP + '%(artist)s' + SEP + '%(track)s.mp3'
     }
 
+    '''
     with ydl.YoutubeDL(settings) as dl:
         dl.download([url])
+    '''
+
+    with ydl.YoutubeDL(settings) as dl:
+        result = dl.extract_info(
+            url,
+            download=True
+        )
+
+    # download thumbnail
+    wget.download(result['entries'][0]['thumbnail'], out=path+'thumbnail.jpg')
 
 
 def bandcamp_format(songs: list):  # add metatada to songs with bandcamp format
